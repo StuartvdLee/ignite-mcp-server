@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Typecheck and test
+        run: npm run check
+      - name: Bundle
+        run: npm run build
+
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build the image
+        run: docker build --tag ignite-mcp:ci .
+      - name: Start it and call a tool
+        run: |
+          docker run --detach --name ignite --publish 8080:8080 ignite-mcp:ci
+          for _ in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/healthz; then break; fi
+            sleep 1
+          done
+          echo
+          curl -fsS http://127.0.0.1:8080/mcp \
+            --header 'content-type: application/json' \
+            --header 'accept: application/json, text/event-stream' \
+            --data '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_catalog_overview","arguments":{}}}' \
+            | grep --quiet 'Microsoft Ignite 2026'
+      - name: Stop it gracefully
+        run: |
+          docker stop ignite
+          test "$(docker inspect ignite --format '{{.State.ExitCode}}')" = 0
+      - name: Container logs
+        if: always()
+        run: docker logs ignite
+
+  infra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Compile the template and its parameters
+        run: |
+          az bicep build --file infra/main.bicep --stdout > /dev/null
+          az bicep build-params --file infra/main.bicepparam --stdout > /dev/null
+      - name: Check the deploy script
+        run: bash -n infra/deploy.sh

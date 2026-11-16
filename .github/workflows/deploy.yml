@@ -1,0 +1,53 @@
+name: Deploy
+
+# Builds the image in Azure Container Registry and deploys it to Azure Container Apps, with infra/deploy.sh.
+# Run it by hand from the Actions tab. See "Deploy from GitHub Actions" in the README for the one-time setup.
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+          APP_NAME: ${{ vars.APP_NAME || 'ignite-mcp' }}
+          MIN_REPLICAS: ${{ vars.MIN_REPLICAS || '1' }}
+          MAX_REPLICAS: ${{ vars.MAX_REPLICAS || '3' }}
+          REPLICA_CPU: ${{ vars.REPLICA_CPU || '0.25' }}
+          LOG_LEVEL: ${{ vars.LOG_LEVEL || 'info' }}
+          ALLOWED_ORIGINS: ${{ vars.ALLOWED_ORIGINS }}
+          ALLOWED_HOSTS: ${{ vars.ALLOWED_HOSTS }}
+          PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}
+          IGNITE_DATA_URL: ${{ vars.IGNITE_DATA_URL }}
+          MCP_API_KEY: ${{ secrets.MCP_API_KEY }}
+        run: infra/deploy.sh "$AZURE_RESOURCE_GROUP" "$AZURE_LOCATION"
+
+      - name: Show the endpoint
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+        run: |
+          url="$(az deployment group show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name ignite-mcp-app \
+            --query properties.outputs.mcpUrl.value \
+            --output tsv)"
+          echo "MCP endpoint: \`$url\`" >> "$GITHUB_STEP_SUMMARY"
