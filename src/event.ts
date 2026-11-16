@@ -9,10 +9,13 @@ export const EVENT = {
 
 export const DEFAULT_DATA_URL = 'https://aka.ms/ignite2026-session-info';
 
+/** The time ID that the feed gives sessions without a time slot (on-demand content). */
+export const NO_TIME_ID = 'AAAAAAAAAAAAAAAAAAAA';
+
 /**
- * Deep links are inferred from the links embedded in the session descriptions of the
- * official dataset: `/sessions/{sessionId}-AAAAAAAAAAAAAAAAAAAA?source=sessions`.
+ * Catalog pages are addressed by session instance (`{sessionId}-{sessionTimeId}`), so a session that runs
+ * several times has a page per time slot. On-demand sessions use the `NO_TIME_ID` time ID.
  */
-export function sessionUrl(sessionId: string): string {
-  return `${EVENT.sessionsUrl}/${encodeURIComponent(sessionId)}-AAAAAAAAAAAAAAAAAAAA?source=sessions`;
+export function sessionUrl(instanceId: string): string {
+  return `${EVENT.sessionsUrl}/${encodeURIComponent(instanceId)}?source=sessions`;
 }

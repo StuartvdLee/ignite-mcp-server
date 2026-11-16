@@ -143,7 +143,7 @@ describe('summaryView', () => {
       recorded: true,
       liveStream: true,
       onDemand: false,
-      url: 'https://ignite.microsoft.com/en-US/sessions/1787856605931001EI5K-AAAAAAAAAAAAAAAAAAAA?source=sessions',
+      url: 'https://ignite.microsoft.com/en-US/sessions/1787856605931001EI5K-1791588217922001CW4I?source=sessions',
     });
     expect(view.slots.map((slot) => slot.slotId)).toEqual(['BRK217@2026-11-19T16:00']);
   });

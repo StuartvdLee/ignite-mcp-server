@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { sessionUrl } from '../src/event';
+import { NO_TIME_ID, sessionUrl } from '../src/event';
 import { normalizeCatalog } from '../src/catalog/normalize';
 import { fixtureCatalog, readFeed, sessionOf } from './helpers';
 
@@ -61,8 +61,15 @@ describe('normalizeCatalog on the feed fixture', () => {
     });
     expect(session.tags).toContain('Microsoft Copilot');
     expect(session.description.startsWith('Organizations are moving beyond AI experiments')).toBe(true);
-    expect(session.url).toBe(sessionUrl(session.id));
-    expect(session.url.startsWith('https://ignite.microsoft.com/en-US/sessions/')).toBe(true);
+    expect(session.url).toBe('https://ignite.microsoft.com/en-US/sessions/1787856605931001EI5K-1791588217922001CW4I?source=sessions');
+  });
+
+  it('links to the first time slot of a repeated session, and to the time-less instance of on-demand content', () => {
+    const catalog = fixtureCatalog();
+    const lab = sessionOf(catalog, 'LAB652');
+    expect(lab.occurrences.length).toBeGreaterThan(1);
+    expect(lab.url).toBe(sessionUrl(lab.occurrences[0]!.instanceId));
+    expect(sessionOf(catalog, 'LAB711D').url).toBe(sessionUrl(`1792444320801001wekP-${NO_TIME_ID}`));
   });
 
   it('strips zero-width characters that the feed puts into titles', () => {

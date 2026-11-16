@@ -1,4 +1,4 @@
-import { sessionUrl } from '../event';
+import { NO_TIME_ID, sessionUrl } from '../event';
 import { cleanInline, htmlToText } from './text';
 import { localParts } from './time';
 import type { Occurrence, Resource, Session, Speaker } from './types';
@@ -213,7 +213,7 @@ export function normalizeCatalog(feed: unknown): NormalizeResult {
       occurrences: sorted,
       relatedCodes: [],
       resources: parseResources(base),
-      url: sessionUrl(id),
+      url: sessionUrl(sorted[0]?.instanceId ?? (cleanInline(base.sessionInstanceId) || `${id}-${NO_TIME_ID}`)),
     };
     sessions.push(session);
   }

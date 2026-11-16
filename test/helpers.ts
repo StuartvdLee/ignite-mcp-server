@@ -5,7 +5,7 @@ import { readSnapshot } from '../src/catalog/loader';
 import { normalizeCatalog } from '../src/catalog/normalize';
 import { zonedToUtcMs } from '../src/catalog/time';
 import type { CatalogMeta, Occurrence, Session } from '../src/catalog/types';
-import { sessionUrl } from '../src/event';
+import { NO_TIME_ID, sessionUrl } from '../src/event';
 
 export const ROOT = fileURLToPath(new URL('..', import.meta.url));
 export const SNAPSHOT_PATH = fileURLToPath(new URL('../data/sessions.snapshot.json', import.meta.url));
@@ -90,7 +90,7 @@ export function makeSession(code: string, overrides: Partial<Session> = {}, slot
     occurrences: slots,
     relatedCodes: [],
     resources: [],
-    url: sessionUrl(`id${code}`),
+    url: sessionUrl(slots[0]?.instanceId ?? `id${code}-${NO_TIME_ID}`),
     ...overrides,
   };
 }

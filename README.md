@@ -20,13 +20,13 @@ What `search_sessions` returns for the query "Azure Container Apps" on Wednesday
 ```text
 31 sessions found for "Azure Container Apps"; showing 1–3. Filters: days: 2026-11-18. All times are Pacific Time (San Francisco).
 
-1. **LTG1279** · [Deploy AI apps effortlessly with Azure Container Apps Express](https://ignite.microsoft.com/en-US/sessions/1787856679900001E1WS-AAAAAAAAAAAAAAAAAAAA?source=sessions)
+1. **LTG1279** · [Deploy AI apps effortlessly with Azure Container Apps Express](https://ignite.microsoft.com/en-US/sessions/1787856679900001E1WS-1791588182996001CK1M?source=sessions)
    Lightning Talk · Level 200 (Intermediate) · In-person
    Wed Nov 18, 1:20–1:35 PM · Moscone South, The Hub, Lightning Talk 2
    Speakers: Chris Ross
    Matched: title; description
    Learn how Azure Container Apps Express helps practitioners quickly orchestrate AI capabilities without Kubernetes expertise. See how to deploy, operate, and scale from zero to hyperscale without…
-2. **LAB722** · [Operate secure, multi-tenant agentic apps on Azure Container Apps](https://ignite.microsoft.com/en-US/sessions/1787856876398001h9Z7-AAAAAAAAAAAAAAAAAAAA?source=sessions)
+2. **LAB722** · [Operate secure, multi-tenant agentic apps on Azure Container Apps](https://ignite.microsoft.com/en-US/sessions/1787856876398001h9Z7-1791588128453001CPL2?source=sessions)
    Lab · Level 300 (Advanced) · In-person
    Wed Nov 18, 2:15–3:30 PM · Moscone West, Level 3, Room 3020
    Speakers: Ahmed ElSayed, Jenny Lawrance
@@ -319,7 +319,7 @@ At startup the server reads the bundled snapshot, so it answers within a second 
 
 - **Search is lexical.** It matches words and their synonyms, not meaning, so a description in entirely different words can be missed.
 - **The walking time between venues is a heuristic**, an estimate by venue, not a route.
-- **The link to a session is built from its id** in the format of the Ignite site. The site blocks automated requests, so the format could not be checked here; if a link doesn't open, search for the session code on the catalog site.
+- **Session links point to a time slot.** The Ignite site has a page per session instance (`{sessionId}-{sessionTimeId}`), so a session that runs several times links to its first slot, and calendar entries link to their own slot.
 - **Large answers.** A 25-result search is about 42 KB; the biggest answers are up to roughly 130 KB. Ask for fewer results if your client struggles.
 - **No push.** The server is stateless and doesn't send notifications; the catalog changes show up on the next call after a refresh. Each replica keeps its own copy and its own rate-limit counters.
 

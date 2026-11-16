@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { EVENT } from '../event';
+import { EVENT, sessionUrl } from '../event';
 import { truncate } from './text';
 import type { Occurrence, Session } from './types';
 
@@ -111,6 +111,7 @@ export function buildCalendar(events: readonly CalendarEvent[], options: Calenda
 
 /** The text of an entry's calendar item: key facts first, then a short excerpt and the link. */
 export function toCalendarEvent(session: Session, occurrence: Occurrence): CalendarEvent {
+  const url = sessionUrl(occurrence.instanceId);
   const facts = [session.type, session.level].filter(Boolean).join(' · ');
   const speakers = session.speakers.map((speaker) => speaker.name).join(', ');
   const description = [
@@ -118,7 +119,7 @@ export function toCalendarEvent(session: Session, occurrence: Occurrence): Calen
     speakers ? `Speakers: ${speakers}` : '',
     occurrence.room && occurrence.venue ? `Where: ${occurrence.venue}, ${occurrence.room} (${EVENT.timeZoneLabel})` : `Times are in ${EVENT.timeZoneLabel}`,
     session.description ? `\n${truncate(session.description, DESCRIPTION_CHARS)}` : '',
-    `\n${session.url}`,
+    `\n${url}`,
   ]
     .filter((line) => line !== '')
     .join('\n');
@@ -129,7 +130,7 @@ export function toCalendarEvent(session: Session, occurrence: Occurrence): Calen
     location: occurrence.location ? occurrence.location.replace(/\s*\|\s*/g, ', ') : undefined,
     startMs: occurrence.startMs,
     endMs: occurrence.endMs,
-    url: session.url,
+    url,
   };
 }
 
